@@ -2,7 +2,7 @@
 MovieCorns is an application that recommends popular movies and allows users to view posts from other users. It uses the MVVM design pattern and RestAPI to fetch movie data.
 
 <p align="center">
-!["asdasd"](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTAwNmNmYmJkNTk3MzQ1N2RjNzVlZDk4ZTlmMGMyZTExY2Q4NWQ3ZCZjdD1n/t3HCYdlGdl28t2imbL/giphy.gif)
+![](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTAwNmNmYmJkNTk3MzQ1N2RjNzVlZDk4ZTlmMGMyZTExY2Q4NWQ3ZCZjdD1n/t3HCYdlGdl28t2imbL/giphy.gif)
 </p>
 
 ## Features
