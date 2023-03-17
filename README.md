@@ -5,8 +5,8 @@ MovieCorns is an application that recommends popular movies and allows users to 
 ![](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTAwNmNmYmJkNTk3MzQ1N2RjNzVlZDk4ZTlmMGMyZTExY2Q4NWQ3ZCZjdD1n/t3HCYdlGdl28t2imbL/giphy.gif)
 
 ## Features
-- Recommendations for popular movies
-- Community section to view posts from other users
+- The Movies section has recommendations and a list of popular movies.
+- Discover section to view posts from other users
 - Ability to create, like, and comment on posts
 - Seamless integration with RestAPI for up-to-date movie information
 - MVVM design pattern for efficient and scalable development
