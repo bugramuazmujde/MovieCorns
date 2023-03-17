@@ -44,9 +44,9 @@ extension DiscoverViewController: UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == discoverStoryCollectionView {
-            return discoverViewModel.posts.count + 1
+            return discoverViewModel.data.count + 1
         } else {
-            return discoverViewModel.posts.count
+            return discoverViewModel.data.count
         }
     }
     
@@ -58,25 +58,13 @@ extension DiscoverViewController: UICollectionViewDataSource, UICollectionViewDe
                 cell.discoverStoryName.text = "You"
                 cell.discoverStoryImage.image = UIImage(named: "videoCall")
                 cell.discoverStoryImage.contentMode = .scaleToFill
-            } else if indexPath.row - 1 < discoverViewModel.posts.count {
-                let post = discoverViewModel.posts[indexPath.row - 1]
+            } else if indexPath.row - 1 < discoverViewModel.data.count {
+                let post = discoverViewModel.data[indexPath.row - 1]
                 cell.backgroundColor = UIColor.clear
                 cell.discoverStoryName.text = post.userFullName
                 
-                if let image = imageCache.object(forKey: NSString(string: post.userImageUrl)) {
+                loadImage(post.userImageUrl) { image in
                     cell.discoverStoryImage.image = image
-                } else {
-                    let url = URL(string: post.userImageUrl)!
-                    let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-                        guard let data = data, error == nil else { return }
-                        DispatchQueue.main.async {
-                            if let image = UIImage(data: data) {
-                                self?.imageCache.setObject(image, forKey: NSString(string: post.userImageUrl))
-                                cell.discoverStoryImage.image = image
-                            }
-                        }
-                    }
-                    task.resume()
                 }
             }
             cell.discoverStoryImage.layer.cornerRadius = cell.discoverStoryImage.frame.size.width / 2
@@ -86,7 +74,7 @@ extension DiscoverViewController: UICollectionViewDataSource, UICollectionViewDe
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "discoverPostCell", for: indexPath) as! DiscoverPostCollectionViewCell
-            let post = discoverViewModel.posts[indexPath.row]
+            let post = discoverViewModel.data[indexPath.row]
             cell.discoverPostName.text = post.userFullName
             cell.discoverPostCreatedDate.text = post.createdAt
             cell.discoverPostLikes.text = String(post.likeCount)
@@ -95,36 +83,14 @@ extension DiscoverViewController: UICollectionViewDataSource, UICollectionViewDe
             cell.discoverPostProfileImage.layer.cornerRadius = 45
             cell.discoverPostProfileImage.clipsToBounds = true
             
-            if let image = imageCache.object(forKey: NSString(string: post.postImage)) {
+            loadImage(post.postImage) { image in
                 cell.discoverPostImage.image = image
-            } else {
-                let url = URL(string: post.postImage)!
-                let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-                    guard let data = data, error == nil else { return }
-                    DispatchQueue.main.async {
-                        if let image = UIImage(data: data) {
-                            self?.imageCache.setObject(image, forKey: NSString(string: post.postImage))
-                            cell.discoverPostImage.image = image
-                        }
-                    }
-                }
-                task.resume()
             }
-            if let profile_image = imageCache.object(forKey: NSString(string: post.userImageUrl)) {
-                cell.discoverPostProfileImage.image = profile_image
-            } else {
-                let url = URL(string: post.userImageUrl)!
-                let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-                    guard let data = data, error == nil else { return }
-                    DispatchQueue.main.async {
-                        if let profile_image = UIImage(data: data) {
-                            self?.imageCache.setObject(profile_image, forKey: NSString(string: post.userImageUrl))
-                            cell.discoverPostProfileImage.image = profile_image
-                        }
-                    }
-                }
-                task.resume()
+
+            loadImage(post.userImageUrl) { image in
+                cell.discoverPostProfileImage.image = image
             }
+            
             return cell
         }
     }
@@ -148,6 +114,26 @@ extension UIImage {
     func resized(to size: CGSize) -> UIImage {
         return UIGraphicsImageRenderer(size: size).image { _ in
             draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+}
+
+extension DiscoverViewController {
+    func loadImage(_ urlString: String, completion: @escaping (UIImage?) -> Void) {
+        if let image = imageCache.object(forKey: NSString(string: urlString)) {
+            completion(image)
+        } else {
+            let url = URL(string: urlString)!
+            let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+                guard let data = data, error == nil else { return }
+                DispatchQueue.main.async {
+                    if let image = UIImage(data: data) {
+                        self?.imageCache.setObject(image, forKey: NSString(string: urlString))
+                        completion(image)
+                    }
+                }
+            }
+            task.resume()
         }
     }
 }
